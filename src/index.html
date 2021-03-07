@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./assets/favicon.ico" />
+    <link rel="apple-touch-icon" href="./assets/favicon.ico" />
+    <title>Welcome to NEAR</title>
+    <link rel="stylesheet" href="global.css" />
+  </head>
+  <body>
+    <main id="signed-out-flow" style="display: none">
+      <h1>Welcome to NEAR!</h1>
+      <p>
+        To make use of the NEAR blockchain, you need to sign in. The button
+        below will sign you in using NEAR Wallet.
+      </p>
+      <p>
+        By default, when your app runs in "development" mode, it connects to a
+        test network ("testnet") wallet. This works just like the main network
+        ("mainnet") wallet, but the NEAR Tokens on testnet aren't convertible to
+        other currencies – they're just for testing!
+      </p>
+      <p>Go ahead and click the button below to try it out:</p>
+      <p style="text-align: center; margin-top: 2.5em">
+        <button id="sign-in-button">Sign in</button>
+      </p>
+    </main>
+
+    <div id="signed-in-flow" style="display: none">
+      <button class="link" style="float: right" id="sign-out-button">
+        Sign out
+      </button>
+      <main>
+        <h1>
+          <span data-behavior="account-id"></span>!
+        </h1>
+        <div>
+          <div class="step">
+            <h2>1. Get a list of all Memes in the Museum</h2>
+            <p>
+              We simply use the name that was defined for the function in the
+              contract to call it: <code>get_meme_list</code>
+            </p>
+            <p>
+              Since we need to send our query through the network we need to
+              await the answer. Just like an ordinary API call to a server. The result will be an array with all the names for the accounts that
+              contain the meme contracts.
+            </p>
+            <button id="meme-list-button">Get Meme List</button>
+            <span>Entries in the museum: <span id="meme-list-label"></span></span>
+          </div>
+          <div class="step">
+            <h2>2. Initialize meme contracts</h2>
+            <p>
+              We are almost there. With the full memeList we can start to call
+              the individual contracts and read the details. From the previous
+              chapter we know that each contract is deployed on it’s own
+              account. We need to call different contracts but all of the same
+              kind (meme contracts). So we fill an array with new contracts to
+              use them in the next step.
+            </p>
+            <button id="meme-contracts-init-button" disabled>Initialize Meme Contracts</button>
+            <span>Initialized: <code id="meme-contracts-init-label">false</code></span>
+          </div>
+          <div class="step">
+            <h2>3. Display a meme</h2>
+            <p>
+              Here we go. We have all the contracts ready and call the get_meme
+              function for each of them to display the results. Check the console logs.
+            </p>
+            <button id="show-memes-button" disabled>Get Meme</button>
+            <select name="meme" id="meme-select">
+            </select>
+            <div>
+              <p style="word-break: break-word;" id="meme-text"></p>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <h2>4. Write a comment</h2>
+          <p>
+            Adding a comment to a Meme is just as easy as calling the function set_comment and providing your text. 
+          </p>
+          <p>The message is saved in the meme contract on the NEAR testnet. In other words: calling this function alters the state of the blockchain and costs gas. The costs are a fraction of a cent but keep this in mind when writing more complex functions.</p>
+          <form>
+            <fieldset id="fieldset">
+              <label
+                for="greeting"
+                style="display: block; color: var(--gray); margin-bottom: 0.5em"
+              >
+                write a message
+              </label>
+              <div style="display: flex">
+                <input
+                  style="flex: 1"
+                  autocomplete="off"
+                  id="comment"
+                  data-behavior="comment"
+                />
+              </div>
+            </fieldset>
+          </form>
+          <button id="submit-comment-button" disabled>Submit comment</button>
+          <select name="comments" id="submit-comment-select">
+          </select>
+        </div>
+
+        <div class="step">
+          <h2>5. Load recent comments</h2>
+          <p>
+            Currently, only loading the recent 10 comments per meme is supported. The meme museum is already working on an update. 
+          </p>
+          <button id="get-recent-comments-button" disabled>Get comments</button>
+          <select name="comments" id="recent-comments-select">
+          </select>
+          <div id="recent-comments-container">
+          </div>
+        </div>
+      </div>
+        <div class="footer">
+        <hr />
+
+        <p>
+          To keep learning, check out
+          <a target="_blank" href="https://docs.near.org">the NEAR docs</a>
+          or look through some
+          <a target="_blank" href="https://examples.near.org">example apps</a>.
+        </p>
+      </div>
+      </main>
+    </div>
+
+    <aside data-behavior="notification" style="display: none">
+      <a target="_blank" href="https://explorer.testnet.near.org/accounts/"></a>
+      called method: 'setGreeting' in contract:
+      <a target="_blank" href="https://explorer.testnet.near.org/accounts/"></a>
+      <footer>
+        <div>✔ Succeeded</div>
+        <div>Just now</div>
+      </footer>
+    </aside>
+
+    <script src="./index.js"></script>
+  </body>
+</html>
