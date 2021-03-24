@@ -1,76 +1,47 @@
+import { Contract } from 'near-api-js'
+
 import getConfig from './config'
 import { initContract, login, logout } from './utils'
 
 import 'regenerator-runtime/runtime'
-import { Contract } from 'near-api-js'
+
 const nearConfig = getConfig(process.env.NODE_ENV || 'development')
-
-
 
 const { networkId } = getConfig(process.env.NODE_ENV || 'development')
 
 // global variable used throughout
-let currentGreeting
-
-const submitButton = document.querySelector('form button')
-
-// document.querySelector('form').onsubmit = async (event) => {
-//   event.preventDefault()
-
-//   // get elements from the form using their id attribute
-//   const { fieldset, greeting } = event.target.elements
-
-//   // disable the form while the value gets updated on-chain
-//   fieldset.disabled = true
-
-//   try {
-//     // make an update call to the smart contract
-//     const meme = await window.contract.get_meme()
-//     console.log(meme)
-//     // {
-//     //   // pass the value that the user entered in the greeting field
-//     //   message: greeting.value
-//     // }
-//   } catch (e) {
-//     alert(
-//       'Something went wrong! ' +
-//       'Maybe you need to sign out and back in? ' +
-//       'Check your browser console for more info.'
-//     )
-//     throw e
-//   } finally {
-//     // re-enable the form, whether the call succeeded or failed
-//     fieldset.disabled = false
-//   }
-
-//   // disable the save button, since it now matches the persisted value
-//   submitButton.disabled = true
-
-//   // update the greeting in the UI
-//   await fetchGreeting()
-
-//   // show notification
-//   document.querySelector('[data-behavior=notification]').style.display = 'block'
-
-//   // remove notification again after css animation completes
-//   // this allows it to be shown again next time the form is submitted
-//   setTimeout(() => {
-//     document.querySelector('[data-behavior=notification]').style.display = 'none'
-//   }, 11000)
-// }
 
 const commentInputElement = document.querySelector('input#comment');
 
-// document.querySelector('input#comment').oninput = (event) => {
-//   if (event.target.value !== currentGreeting) {
-//     submitButton.disabled = false
-//   } else {
-//     submitButton.disabled = true
-//   }
-// }
-
 document.querySelector('#sign-in-button').onclick = login
 document.querySelector('#sign-out-button').onclick = logout
+
+let memeList = [];
+const memeContracts = [];
+
+const memeListButton = document.querySelector('#meme-list-button');
+const memeListLabel = document.querySelector('#meme-list-label');
+
+const memeContractsInitButton = document.querySelector('#meme-contracts-init-button');
+const memeContractsInitLabel = document.querySelector('#meme-contracts-init-label');
+
+const memeShowButton = document.querySelector('#show-memes-button');
+
+const memeWriteCommentButton =  document.querySelector('#submit-comment-button');
+const getRecentCommentsButton =  document.querySelector('#get-recent-comments-button');
+
+const memeSelectElement = document.getElementById('meme-select');
+const submitCommentSelectElement = document.getElementById('submit-comment-select');
+const recentCommentSelectElement = document.getElementById('recent-comments-select');
+const commentsContainer = document.getElementById('recent-comments-container');
+
+const memeTextElement = document.getElementById('meme-text');
+
+memeListButton.onclick = getMemeList;
+memeContractsInitButton.onclick = initMemeContracts
+memeShowButton.onclick = showMeme
+memeWriteCommentButton.onclick = writeCommentToMeme
+getRecentCommentsButton.onclick = getRecentComments;
 
 // Display the signed-out-flow container
 function signedOutFlow() {
@@ -98,33 +69,6 @@ function signedInFlow() {
   contractLink.href = contractLink.href.replace('testnet', networkId)
 }
 
-let memeList = [];
-
-const memeListButton = document.querySelector('#meme-list-button');
-const memeListLabel = document.querySelector('#meme-list-label');
-
-const memeContractsInitButton = document.querySelector('#meme-contracts-init-button');
-const memeContractsInitLabel = document.querySelector('#meme-contracts-init-label');
-
-const memeShowButton = document.querySelector('#show-memes-button');
-const memeShowLabel = document.querySelector('#show-memes-label');
-
-const memeWriteCommentButton =  document.querySelector('#submit-comment-button');
-const getRecentCommentsButton =  document.querySelector('#get-recent-comments-button');
-
-memeListButton.onclick = getMemeList;
-memeContractsInitButton.onclick = initMemeContracts
-memeShowButton.onclick = showMeme
-memeWriteCommentButton.onclick = writeCommentToMeme
-getRecentCommentsButton.onclick = getRecentComments;
-
-const memeSelectElement = document.getElementById('meme-select');
-const submitCommentSelectElement = document.getElementById('submit-comment-select');
-const recentCommentSelectElement = document.getElementById('recent-comments-select');
-
-const memeTextElement = document.getElementById('meme-text');
-
-
 async function getMemeList() {
   memeList =  await window.contract.get_meme_list();
   memeContractsInitButton.disabled = false;
@@ -132,8 +76,6 @@ async function getMemeList() {
   console.log(memeList);
 }
 
-
-const memeContracts = [];
 async function initMemeContracts() {
    memeList.forEach(async meme => {
     memeContracts.push(
@@ -165,18 +107,6 @@ async function showMeme() {
 }
 
 
-
-
-function addOptions(element) {
-  for (let counter = 0; counter < memeContracts.length; counter++) {
-    const option = document.createElement("option");
-    option.text = counter;
-    element.add(option);
-  }
-}
-
-
-
 async function writeCommentToMeme() {
   const comment = commentInputElement.value;
   const memeIndex = submitCommentSelectElement.value;
@@ -193,8 +123,6 @@ async function writeCommentToMeme() {
 
   console.log(result);
 }
-
-const commentsContainer = document.getElementById('recent-comments-container');
 
 function addComments(comments) {
   commentsContainer.innerHTML = "";
@@ -219,3 +147,11 @@ window.nearInitPromise = initContract()
     else signedOutFlow()
   })
   .catch(console.error)
+
+function addOptions(element) {
+  for (let counter = 0; counter < memeContracts.length; counter++) {
+    const option = document.createElement("option");
+    option.text = counter;
+    element.add(option);
+  }
+}
